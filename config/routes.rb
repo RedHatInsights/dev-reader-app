@@ -9,7 +9,7 @@ Rails.application.routes.draw do
 
   scope :as => :app, :path => prefix do
     root :to => 'queries#index'
-    post '/', :to => 'queries#create'
+    post '/', :to => 'queries#get_data'
     get '/others', :to => 'others#index'
   end
 end
