@@ -1,0 +1,20 @@
+default: &default
+  adapter: postgresql
+  encoding: utf8
+  username: root
+  pool: 5
+  wait_timeout: 5
+  min_messages: warning
+
+development:
+  <<: *default
+  database: sources_api_development
+  min_messages: notice
+
+test:
+  <<: *default
+  database: sources_api_test
+
+production:
+  <<: *default
+  database: sources_api_production

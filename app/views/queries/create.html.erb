@@ -1,0 +1,32 @@
+<h1>Queries#result</h1>
+<p>TODO: Should be Ajax</p>
+
+<%= render :partial => 'form' %>
+
+<h2>Query</h2>
+<p><%= @query %></p>
+
+<h2>Result</h2>
+
+<p>Rows count: <%= @rows_cnt %></p>
+<p>Cols count: <%= @col_names.size %></p>
+
+<table>
+  <tr>
+    <th>&nbsp;</th>
+    <% @col_names.each do |col_name| %>
+    <th><%= col_name %></th>
+    <% end %>
+  </tr>
+  <% @results.each_with_index do |result, idx| %>
+  <tr>
+    <td><%= idx + 1 %></td>
+    <% @col_names.each do |col_name| %>
+    <td><%= result[col_name] %></td>
+    <% end %>
+  </tr>
+  <% end %>
+</table>
+
+
+<%= link_to 'Back to index', queries_path %>
