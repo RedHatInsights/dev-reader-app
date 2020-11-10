@@ -15,6 +15,8 @@ import {
 
 import SqlBuilder from '../../assets/javascripts/pages/sql_builder';
 
+import '@redhat-cloud-services/frontend-components/index.css';
+
 const App = () => {
   const [isNavOpen, setNavOpen] = useState(false);
 
