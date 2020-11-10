@@ -4,8 +4,12 @@ Rails.application.routes.draw do
     prefix = File.join(ENV["PATH_PREFIX"], ENV["APP_NAME"]).gsub(/^\/+|\/+$/, "")
   end
 
+  # Should be forbidden in turnpike
+  get '/others', :to => 'others#index'
+
   scope :as => :app, :path => prefix do
     root :to => 'queries#index'
     post '/', :to => 'queries#create'
+    get '/others', :to => 'others#index'
   end
 end
