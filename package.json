@@ -9,7 +9,9 @@
     "@patternfly/react-icons": "^4.7.16",
     "@patternfly/react-table": "^4.19.5",
     "@rails/webpacker": "5.2.1",
+    "@redhat-cloud-services/frontend-components": "2.4.19",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "classnames": "2.2.6",
     "dotenv": "^8.2.0",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
@@ -17,6 +19,8 @@
     "zustand": "^3.1.4"
   },
   "devDependencies": {
+    "eslint": "^7.13.0",
+    "eslint-plugin-react": "^7.21.5",
     "webpack-dev-server": "^3.11.0"
   }
 }

@@ -1,20 +1,20 @@
 import React from 'react';
-import { Spinner } from '@patternfly/react-core';
+import { Bullseye, Spinner } from '@patternfly/react-core';
 
 import SqlForm from '../components/sql_form';
 import useSqlStore from '../store/sql_store';
 import ResultTable from '../components/result_table';
 
 const SqlBuilder = () => {
-    const loading = useSqlStore((state) => state.loading);
+  const loading = useSqlStore((state) => state.loading);
 
-    return <div>
-        <SqlForm />
-        { loading
-        ? <Spinner />
-        : <ResultTable />
-        }
-    </div>
+  return <div>
+    <SqlForm />
+    { loading
+      ? <Bullseye className="pf-u-mt-xl"><Spinner /></Bullseye>
+      : <ResultTable />
+    }
+  </div>
 }
 
 export default SqlBuilder;
