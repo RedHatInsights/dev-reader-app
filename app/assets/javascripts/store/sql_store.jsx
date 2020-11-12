@@ -5,10 +5,18 @@ const useSqlStore = create(set => ({
   data: [],
   loading: false,
   error: '',
-  setSql: (sql) => set(state => ({ ...state, sql })),
-  setData: (data) => set(state => ({...state, data, loading: false })),
-  setLoading: (loading) => set(state => ({...state, loading, error: '' })),
-  setError: (error) => set(state => ({...state, error, loading: false }))
+  queryBuilder: {
+    loaded: false,
+    value: '',
+    loading: false,
+    structure: undefined,
+    query: ''
+  },
+  setSql: (sql) => set(() => ({sql})),
+  setData: (data) => set(() => ({data, loading: false })),
+  setLoading: (loading) => set(() => ({loading, error: '' })),
+  setError: (error) => set(() => ({error, loading: false })),
+  setQueryState: (newState) => set(state => ({queryBuilder: { ...state.queryBuilder, ...newState} }))
 }))
 
 export default useSqlStore;
