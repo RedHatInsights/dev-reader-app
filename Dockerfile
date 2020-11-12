@@ -1,7 +1,5 @@
 FROM registry.access.redhat.com/ubi8/ubi:8.2-343
 
-RUN rpm --import https://dl.yarnpkg.com/rpm/pubkey.gpg
-
 RUN dnf -y --disableplugin=subscription-manager module enable ruby:2.5 && \
     dnf -y --disableplugin=subscription-manager --setopt=tsflags=nodocs install \
       ruby-devel \
@@ -34,12 +32,11 @@ COPY . $WORKDIR
 COPY docker-assets/entrypoint /usr/bin
 COPY docker-assets/run_rails_server /usr/bin
 
-RUN chgrp -R 0 $WORKDIR && \
-    chmod -R g=u $WORKDIR
-
 RUN npm install
 RUN npm install -g yarn
-RUN $WORKDIR/bin/webpack
+
+RUN chgrp -R 0 $WORKDIR && \
+    chmod -R g=u $WORKDIR
 
 EXPOSE 3000
 
