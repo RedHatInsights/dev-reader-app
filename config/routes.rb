@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   scope :as => :app, :path => prefix do
     root :to => 'queries#index'
     post '/', :to => 'queries#get_data'
+    post '/load_structure', :to => 'queries#load_structure'
     get '/others', :to => 'others#index'
   end
 end
