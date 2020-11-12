@@ -15,6 +15,8 @@ import {
 
 import SqlBuilder from '../../assets/javascripts/pages/sql_builder';
 
+import '@patternfly/patternfly/patternfly.css';
+import '@patternfly/patternfly/patternfly-addons.css';
 import '@redhat-cloud-services/frontend-components/index.css';
 
 const App = () => {
