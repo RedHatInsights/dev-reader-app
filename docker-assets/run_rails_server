@@ -2,7 +2,7 @@
 
 function write_encryption_key() {
   echo "== Writing encryption key =="
-  cat > $WORKDIR/v2_key << KEY
+  cat > ${WORKDIR}v2_key << KEY
 ---
 :algorithm: aes-256-cbc
 :key: ${ENCRYPTION_KEY}
@@ -28,4 +28,8 @@ write_encryption_key
 # Wait for postgres to be ready
 check_svc_status $DATABASE_HOST $DATABASE_PORT
 
+echo "== Starting Rails server =="
+
+bundle exec rails assets:precompile
+bundle exec rails webpacker:compile
 bundle exec rails server

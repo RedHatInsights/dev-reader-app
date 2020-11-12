@@ -1,5 +1,7 @@
 FROM registry.access.redhat.com/ubi8/ubi:8.2-343
 
+RUN rpm --import https://dl.yarnpkg.com/rpm/pubkey.gpg
+
 RUN dnf -y --disableplugin=subscription-manager module enable ruby:2.5 && \
     dnf -y --disableplugin=subscription-manager --setopt=tsflags=nodocs install \
       ruby-devel \
@@ -14,9 +16,10 @@ RUN dnf -y --disableplugin=subscription-manager module enable ruby:2.5 && \
       # For the rdkafka gem
       cyrus-sasl-devel zlib-devel openssl-devel diffutils \
       && \
+    dnf -y --disableplugin=subscription-manager module install nodejs:10 && \
     dnf --disableplugin=subscription-manager clean all
 
-ENV WORKDIR /opt/sources-api/
+ENV WORKDIR /opt/sources-db-reader/
 ENV RAILS_ROOT $WORKDIR
 WORKDIR $WORKDIR
 
@@ -33,6 +36,10 @@ COPY docker-assets/run_rails_server /usr/bin
 
 RUN chgrp -R 0 $WORKDIR && \
     chmod -R g=u $WORKDIR
+
+RUN npm install
+RUN npm install -g yarn
+RUN $WORKDIR/bin/webpack
 
 EXPOSE 3000
 

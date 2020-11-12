@@ -1,3 +1,5 @@
+require 'sql_processor'
+
 class QueriesController < ApplicationController
   def index
   end

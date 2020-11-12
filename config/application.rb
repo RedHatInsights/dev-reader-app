@@ -10,7 +10,7 @@ require "action_controller/railtie"
 require "action_mailer/railtie"
 require "action_view/railtie"
 require "action_cable/engine"
-require "sprockets/railtie"
+# require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -27,7 +27,13 @@ module TopoSourcesDbReader
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
 
+    # Disabling eagerload in production in favor of autoload
+    config.autoload_paths += config.eager_load_paths
+
     config.autoload_paths << Rails.root.join("lib").to_s
+
+    config.log_level = (ENV['RAILS_LOG_LEVEL'] || 'debug').downcase.to_sym
+    Insights::API::Common::Logging.activate(config)
 
     # Don't generate system test files.
     config.generators.system_tests = nil
