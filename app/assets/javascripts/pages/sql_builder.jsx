@@ -4,11 +4,13 @@ import { Bullseye, Spinner, Card, CardBody } from '@patternfly/react-core';
 import SqlForm from '../components/sql_form';
 import useSqlStore from '../store/sql_store';
 import ResultTable from '../components/result_table';
+import DetailModal from '../components/detail_modal';
 
 const SqlBuilder = () => {
   const loading = useSqlStore((state) => state.loading);
 
   return <div>
+    <DetailModal />
     <Card isFlat className="pf-u-m-md">
       <CardBody>
         <SqlForm />
