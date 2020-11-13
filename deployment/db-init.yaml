@@ -1,0 +1,134 @@
+# Performs Turnpike's db-reader service onboarding on an application database
+
+apiVersion: v1
+kind: Template
+metadata:
+  name: db-reader-init
+
+parameters:
+  - name: ACTIVE_DEADLINE_SECONDS
+    value: "7200"
+  - name: APP_NAME
+    description: The name of the application
+    required: true
+  - name: DB_NAME
+    description: The name of the database
+    required: true
+  - name: DB_SECRET_NAME
+    description: The name of the secret with db creds
+    required: true
+  - name: DB_SECRET_RO_NAME
+    description: The name of the secret with read-only creds
+    required: true
+  - name: IMAGE
+    value: "quay.io/cloudservices/pg-script-runner-base"
+  - name: IMAGE_TAG
+    value: "6c1b04a"
+  - name: PGCONNECT_TIMEOUT
+    value: "30"
+  - name: PGSSLMODE
+    value: "require"
+  - name: PGVERSION
+    value: ""
+  - name: VERSION
+    value: "1"
+objects:
+- kind: ConfigMap
+  apiVersion: v1
+  metadata:
+    name: db-reader-init-${APP_NAME}-${VERSION}
+  data:
+    init.sql: |
+      \echo
+      \echo ==================================
+      \echo Connecting to the database
+
+      CREATE USER "${DATABASE_USER}" WITH_PASSWORD "${DATABASE_RO_PASSWORD}";
+
+      GRANT CONNECT ON DATABASE "${DATABASE_NAME}" TO "${DATABASE_RO_USER}";
+
+      GRANT USAGE ON SCHEMA public TO "${DATABASE_RO_USER}";
+
+      GRANT SELECT ON ALL TABLES IN SCHEMA public TO "${DATABASE_RO_USER}";
+
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO "${DATABASE_RO_USER}";
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    name: db-reader-init-${APP_NAME}-${VERSION}
+  spec:
+    template:
+      metadata:
+        labels:
+          app: db-reader-init
+        annotations:
+          app: db-reader-init
+      spec:
+        activeDeadlineSeconds: ${{ACTIVE_DEADLINE_SECONDS}}
+        backoffLimit: 1
+        completions: 1
+        parallelism: 1
+        restartPolicy: Never
+        imagePullSecrets:
+          - name: quay-cloudservices-pull
+          - name: rh-registry-pull
+        containers:
+        - name: db-reader-init
+          image: ${IMAGE}:${IMAGE_TAG}
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          env:
+          - name: PGHOST
+            valueFrom:
+              secretKeyRef:
+                key: db.host
+                name: ${{DB_SECRET_NAME}}
+          - name: PGPORT
+            valueFrom:
+              secretKeyRef:
+                key: db.port
+                name: ${{DB_SECRET_NAME}}
+          - name: PGDATABASE
+            value: ${DB_NAME}
+          - name: PGUSER
+            valueFrom:
+              secretKeyRef:
+                key: db.user
+                name: ${{DB_SECRET_NAME}}
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: db.password
+                name: ${{DB_SECRET_NAME}}
+          - name: TARGET_DATABASE
+            value: ${DB_NAME}
+          - name: PGVERSION
+            value: ${PGVERSION}
+          - name: PGSSLMODE
+            value: ${PGSSLMODE}
+          - name: PGCONNECT_TIMEOUT
+            value: ${PGCONNECT_TIMEOUT}
+          - name: DATABASE_RO_USER
+            valueFrom:
+              secretKeyRef:
+                key: db.user
+                name: ${{DB_SECRET_RO_NAME}}
+          - name: DATABASE_RO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: db.password
+                name: ${{DB_SECRET_RO_PASSWORD}}
+          volumeMounts:
+          - name: init-script
+            mounthPath: /opt/app-root/pg-script-runner/pg-scripts.d/init.sql
+            subPath: init.sql
+            readOnly: true
+        volumes:
+        - name: init-script
+          configMap:
+            name: db-reader-init-${APP_NAME}-${VERSION}
