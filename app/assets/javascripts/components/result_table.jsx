@@ -70,15 +70,15 @@ const ResultTable = () => {
   }, data)
 
   if (error) {
-    return <Alert className="pf-u-mt-xl" variant="danger" isInline title={error} />
+    return <Alert className="pf-u-m-md" variant="danger" isInline title={error} />
   }
 
   if (!data || data.length === 0) {
-    return <Alert className="pf-u-mt-xl" variant="info" isInline title="Please perform a query to load data" />
+    return <Alert className="pf-u-m-md" variant="info" isInline title="Please perform a query to load data" />
   }
 
   if(!state.rows) {
-    return <Bullseye className="pf-u-mt-xl"><Spinner /></Bullseye>;
+    return <Bullseye className="pf-u-m-md"><Spinner /></Bullseye>;
   }
 
   const onSort = (_e, index, direction) => setState({

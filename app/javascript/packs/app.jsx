@@ -7,10 +7,12 @@ import ReactDOM from 'react-dom'
 import {
   Page,
   PageHeader,
-  PageHeaderTools,
   PageSidebar,
   PageSection,
-  PageSectionVariants
+  PageSectionVariants,
+  Nav,
+  NavItem,
+  NavList
 } from '@patternfly/react-core';
 
 import SqlBuilder from '../../assets/javascripts/pages/sql_builder';
@@ -19,24 +21,33 @@ import '@patternfly/patternfly/patternfly.css';
 import '@patternfly/patternfly/patternfly-addons.css';
 import '@redhat-cloud-services/frontend-components/index.css';
 
+const Navigation = () => (
+  <Nav aria-label="Nav">
+    <NavList>
+      <NavItem itemId={0} isActive>
+      Query builder
+      </NavItem>
+    </NavList>
+  </Nav>
+)
+
 const App = () => {
   const [isNavOpen, setNavOpen] = useState(false);
 
   const Header = (
     <PageHeader
       logo="TopoSourcesDbReader"
-      headerTools={<PageHeaderTools>User</PageHeaderTools>}
       showNavToggle
       isNavOpen={isNavOpen}
       onNavToggle={() => setNavOpen(!isNavOpen)}
     />
   );
 
-  const Sidebar = <PageSidebar nav="Navigation" isNavOpen={isNavOpen} />;
+  const Sidebar = <PageSidebar nav={<Navigation />} isNavOpen={isNavOpen} />;
 
   return (
     <Page header={Header} sidebar={Sidebar}>
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection variant={PageSectionVariants.light} className="pf-u-p-0">
         <SqlBuilder />
       </PageSection>
     </Page>
