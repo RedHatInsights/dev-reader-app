@@ -3,6 +3,8 @@
 import React from 'react';
 import QueryBuilder, { formatQuery } from 'react-querybuilder';
 import { Alert, Button, ClipboardCopy, FormGroup, InputGroup, FormSelectOption, FormSelect, TextInput } from '@patternfly/react-core';
+import useFormApi from '@data-driven-forms/react-form-renderer/dist/cjs/use-form-api';
+import FormSpy from '@data-driven-forms/react-form-renderer/dist/cjs/form-spy';
 
 import 'react-querybuilder/dist/query-builder.scss';
 import useSqlStore from '../store/sql_store';
@@ -42,6 +44,7 @@ const controlElements = {
 const SqlBuilder = () => {
   const state = useSqlStore((state) => state.queryBuilder);
   const setState = useSqlStore((state) => state.setQueryState);
+  const { change, getState } = useFormApi();
 
   const loadTableStructure = () => {
     setState({ loading: true});
@@ -55,6 +58,8 @@ const SqlBuilder = () => {
       error: (data) => console.log(data)
     })
   }
+
+  const updateQuery = () => change('query', `${getState().values.query}\nWHERE ${state.query}`);
 
   return (
     <React.Fragment>
@@ -79,7 +84,10 @@ const SqlBuilder = () => {
           fields={state.structure}
           onQueryChange={(query) => setState({query: formatQuery(query, 'sql'), initialQuery: query})}
         />
-        <ClipboardCopy isReadOnly>{state.query}</ClipboardCopy>
+        <InputGroup>
+          <ClipboardCopy isReadOnly style={{flexGrow: 1}}>{state.query}</ClipboardCopy>
+          <Button variant="control" onClick={updateQuery}>Add to query</Button>
+        </InputGroup>
       </React.Fragment>}
       {!state.loaded && <Alert className="pf-u-mt-sm" variant="info" isInline title="No structure loaded" />}
     </React.Fragment>

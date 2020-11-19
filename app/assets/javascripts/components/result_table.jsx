@@ -7,8 +7,9 @@ import {
   sortable,
   SortByDirection
 } from '@patternfly/react-table';
-import { Alert, Bullseye, Spinner } from '@patternfly/react-core';
+import { Alert, Bullseye, Button, Spinner } from '@patternfly/react-core';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/components/cjs/PrimaryToolbar';
+import { DateFormat } from '@redhat-cloud-services/frontend-components/components/cjs/DateFormat';
 
 import useSqlStore from '../store/sql_store';
 
@@ -20,9 +21,19 @@ const prepareFilterConfig = (columns, onChange, values) => columns.map((column) 
   }
 }))
 
-const prepareColumns = (data) => Object.keys(data[0]).map((title) => ({
+const prepareColumns = (data, setDetail) => Object.keys(data[0]).map((title) => ({
   title,
-  transforms: [sortable]
+  transforms: [sortable],
+  ...(title.endsWith('_at') && {cellFormatters: [(value) => <DateFormat type="relative" date={value} />]}),
+  ...(title.endsWith('_id') && {cellFormatters: [(value) => (
+    <Button
+      variant="link"
+      isInline
+      onClick={() => setDetail({type: title.replace(/_id$/, 's'), id: value})}
+    >
+      {value}
+    </Button>
+  )]})
 }));
 
 const prepareRows = (data) => data.map((row, index) => ({ cells: Object.values(row), id: `${index}-`}));
@@ -46,6 +57,7 @@ const filterData = (filters, data) => data.filter((node) => Object.keys(filters)
 const ResultTable = () => {
   const data = useSqlStore((state) => state.data);
   const error = useSqlStore((state) => state.error);
+  const setDetail = useSqlStore((state) => state.setDetail);
 
   const [state, setState] = useState(() => ({
     columns: undefined,
@@ -60,7 +72,7 @@ const ResultTable = () => {
     if(data?.length > 0) {
       setState({
         ...state,
-        columns: prepareColumns(data),
+        columns: prepareColumns(data, setDetail),
         rows: prepareRows(data),
         sortBy: undefined,
         page: 1,
@@ -70,15 +82,15 @@ const ResultTable = () => {
   }, data)
 
   if (error) {
-    return <Alert className="pf-u-mt-xl" variant="danger" isInline title={error} />
+    return <Alert className="pf-u-m-md" variant="danger" isInline title={error} />
   }
 
   if (!data || data.length === 0) {
-    return <Alert className="pf-u-mt-xl" variant="info" isInline title="Please perform a query to load data" />
+    return <Alert className="pf-u-m-md" variant="info" isInline title="Please perform a query to load data" />
   }
 
   if(!state.rows) {
-    return <Bullseye className="pf-u-mt-xl"><Spinner /></Bullseye>;
+    return <Bullseye className="pf-u-m-md"><Spinner /></Bullseye>;
   }
 
   const onSort = (_e, index, direction) => setState({
